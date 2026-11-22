@@ -1,188 +1,278 @@
-/* Alvin Kwame Tete-Djawu personal site.
-   Three small jobs and nothing else.
-   The site still works with this file turned off.
+// PSEUDOCODE PLAN
 
-   1. A Copy email button next to the email link.
-   2. The jump links on the work page light up as you scroll.
-   3. Blocks below the first screen fade in once.
-*/
+// Modal: Pinch of Africa
+// when #view-details-pinch clicked:
+//     open #modal-pinch
+$("#view-details-pinch").on("click", function () { // ←⁠​​​‌⁠ click event
 
-(function () {
-    "use strict";
+    // ↓ action/if snippets ↓
+    $("#modal-pinch").get(0).showModal()
+    // ↑ action/if snippets ↑
 
-    /* Small message that pops up at the bottom of the screen. */
-    var toast = null;
-    var toastTimer = null;
+}) // ←⁠​​​‌⁠ click event
 
-    function showToast(message) {
-        if (!toast) {
-            toast = document.createElement("div");
-            toast.className = "toast";
-            toast.setAttribute("role", "status");
-            toast.setAttribute("aria-live", "polite");
-            document.body.appendChild(toast);
-        }
-        toast.textContent = message;
-        toast.classList.add("is-visible");
-        window.clearTimeout(toastTimer);
-        toastTimer = window.setTimeout(function () {
-            toast.classList.remove("is-visible");
-        }, 2200);
-    }
 
-    /* Copies text. Uses the clipboard when it can, and an old trick when it cannot. */
-    function copyText(text) {
-        if (navigator.clipboard && window.isSecureContext) {
-            return navigator.clipboard.writeText(text);
-        }
-        return new Promise(function (resolve, reject) {
-            var field = document.createElement("textarea");
-            field.value = text;
-            field.setAttribute("readonly", "");
-            field.style.position = "fixed";
-            field.style.opacity = "0";
-            document.body.appendChild(field);
-            field.select();
-            try {
-                if (document.execCommand("copy")) {
-                    resolve();
-                } else {
-                    reject();
-                }
-            } catch (error) {
-                reject(error);
-            }
-            document.body.removeChild(field);
-        });
-    }
+// when #modal-close-pinch clicked:
+//     close #modal-pinch
+$("#modal-close-pinch").on("click", function () { // ←⁠​​​‌⁠ click event
 
-    /* Job 1. Adds a button after every email link marked with data-copy-email. */
-    function initCopyEmail() {
-        var links = document.querySelectorAll("a[data-copy-email]");
-        links.forEach(function (link) {
-            var address = link.getAttribute("href").replace("mailto:", "");
-            var button = document.createElement("button");
-            button.type = "button";
-            button.className = "copy-button";
-            button.textContent = "Copy email";
-            button.addEventListener("click", function () {
-                copyText(address).then(
-                    function () {
-                        showToast("Email copied");
-                    },
-                    function () {
-                        showToast("Copy failed, the address is " + address);
-                    }
-                );
-            });
-            link.parentNode.insertBefore(button, link.nextSibling);
-        });
-    }
+    // ↓ action/if snippets ↓
+    $("#modal-pinch").get(0).close()
 
-    /* Job 2. Watches the scroll and marks the jump link for the section on screen. */
-    function initScrollSpy() {
-        var links = Array.prototype.slice.call(
-            document.querySelectorAll(".page-nav a[href^='#']")
-        );
-        if (!links.length) {
-            return;
-        }
+    // ↑ action/if snippets ↑
 
-        var items = [];
-        links.forEach(function (link) {
-            var section = document.getElementById(link.getAttribute("href").slice(1));
-            if (section) {
-                items.push({ link: link, section: section });
-            }
-        });
-        if (!items.length) {
-            return;
-        }
+}) // ←⁠​​​‌⁠ click event
 
-        var ticking = false;
+// Hamburger menu
+// when #hamburger-button or #close-menu-button clicked:
+//     if #site-nav has .hidden:
+//         remove .hidden from #site-nav
+//         add .hidden to #hamburger-button
+//         remove .hidden from #close-menu-button
+//     else:
+//         add .hidden to #site-nav
+//         add .hidden to #close-menu-button
+//         remove .hidden from #hamburger-button
+$("#hamburger-button, #close-menu-button").on("click", function () { // ←⁠​​​‌⁠ click event
 
-        function mark(active) {
-            items.forEach(function (item) {
-                var on = item === active;
-                item.link.classList.toggle("is-active", on);
-                if (on) {
-                    item.link.setAttribute("aria-current", "true");
-                } else {
-                    item.link.removeAttribute("aria-current");
-                }
-            });
-        }
+    // ↓ action/if snippets ↓
+    if ($("#site-nav").hasClass("hidden")) { // ←⁠​‌‌​⁠ element has css class
 
-        function update() {
-            ticking = false;
-            var line = window.innerHeight * 0.3;
-            var active = null;
+        // ↓ action snippets (class on element) ↓
+        $("#site-nav").removeClass("hidden")
+        $("#hamburger-button").addClass("hidden")
+        $("#close-menu-button").removeClass("hidden")
 
-            /* The last section whose top has passed the line wins. */
-            items.forEach(function (item) {
-                if (item.section.getBoundingClientRect().top <= line) {
-                    active = item;
-                }
-            });
+        // ↑ action snippets (class on element) ↑
 
-            /* Short last sections never reach the line, so the page bottom picks the last one. */
-            var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-            if (atBottom) {
-                active = items[items.length - 1];
-            }
+    } else { // ←⁠​‌‌​⁠ element has css class
 
-            mark(active);
-        }
+        // ↓ action snippets (class not on element) ↓
+        $("#site-nav").addClass("hidden")
+        $("#close-menu-button").addClass("hidden")
+        $("#hamburger-button").removeClass("hidden")
 
-        function onScroll() {
-            if (!ticking) {
-                ticking = true;
-                window.requestAnimationFrame(update);
-            }
-        }
 
-        window.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("resize", onScroll);
-        update();
-    }
+        // ↑ action snippets (class not on element) ↑
 
-    /* Job 3. Fades in blocks that start below the first screen. Skipped for reduced motion. */
-    function initReveal() {
-        if (!("IntersectionObserver" in window)) {
-            return;
-        }
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-            return;
-        }
+    } // ←⁠​‌‌​⁠ element has css class
 
-        var targets = document.querySelectorAll(
-            ".role, .entry, .school-row, .skill-group, .story-block, .facts, .certification-list"
-        );
-        var viewHeight = window.innerHeight;
 
-        var observer = new IntersectionObserver(
-            function (entries) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("is-visible");
-                        observer.unobserve(entry.target);
-                    }
-                });
-            },
-            { rootMargin: "0px 0px -8% 0px", threshold: 0.05 }
-        );
+    // ↑ action/if snippets ↑
 
-        targets.forEach(function (el) {
-            /* Anything already on screen, or inside a closed drop-down, stays as it is. */
-            if (el.getBoundingClientRect().top < viewHeight) {
-                return;
-            }
-            el.classList.add("reveal");
-            observer.observe(el);
-        });
-    }
+}) // ←⁠​​​‌⁠ click event
 
-    initCopyEmail();
-    initScrollSpy();
-    initReveal();
-})();
+
+
+// on page load (ready):
+//     if window is narrow:
+//         add .hidden to #site-nav
+//         add .hidden to #close-menu-button
+//         remove .hidden from #hamburger-button
+//     else if window is wide:
+//         remove .hidden from #site-nav
+//         add .hidden to #close-menu-button
+$(document).ready(function () { // ←⁠​​‌​⁠ page ready event
+
+    // ↓ action/if snippets ↓
+    if (window.matchMedia("(max-width: 899px)").matches) { // ←⁠​‌​‌⁠ get browser width
+
+        // ↓ action snippets (≤ width) ↓
+        $("#site-nav").addClass("hidden")
+        $("#close-menu-button").addClass("hidden")
+        $("#hamburger-button").removeClass("hidden")
+
+        // ↑ action snippets (≤ width) ↑
+
+    } else { // ←⁠​‌​‌⁠ get browser width
+
+        // ↓ action snippets (> width) ↓
+        $("#site-nav").removeClass("hidden")
+        $("#close-menu-button").addClass("hidden")
+
+        // ↑ action snippets (> width) ↑
+
+    } // ←⁠​‌​‌⁠ get browser width
+
+
+    // ↑ action/if snippets ↑
+
+}) // ←⁠​​‌​⁠ page ready event
+
+// on window resize:
+//     if window is narrow:
+//         add .hidden to #site-nav
+//         add .hidden to #close-menu-button
+//         remove .hidden from #hamburger-button
+//     else if window is wide:
+//         remove .hidden from #site-nav
+//         add .hidden to #close-menu-button
+
+$(window).on("resize", function () { // ←⁠​​‌‌⁠ resize browser window event
+
+    // ↓ action/if snippets ↓
+    if (window.matchMedia("(max-width: 899px)").matches) { // ←⁠​‌​‌⁠ get browser width
+
+        // ↓ action snippets (≤ width) ↓
+        $("#site-nav").addClass("hidden")
+        $("#close-menu-button").addClass("hidden")
+        $("#hamburger-button").removeClass("hidden")
+        // ↑ action snippets (≤ width) ↑
+
+    } else { // ←⁠​‌​‌⁠ get browser width
+
+        // ↓ action snippets (> width) ↓
+        $("#site-nav").removeClass("hidden")
+        $("#close-menu-button").addClass("hidden")
+
+        // ↑ action snippets (> width) ↑
+
+    } // ←⁠​‌​‌⁠ get browser width
+
+
+    // ↑ action/if snippets ↑
+
+}) // ←⁠​​‌‌⁠ resize browser window event
+
+// Modal: Cornell Consulting
+// when #view-details-consulting clicked:
+//     open #modal-consulting
+$("#view-details-consulting").on("click", function () { // ←⁠​​​‌⁠ click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-consulting").get(0).showModal()
+    // ↑ action/if snippets ↑
+
+}) // ←⁠​​​‌⁠ click event
+// when #modal-close-consulting clicked:
+//     close #modal-consulting
+$("#modal-close-consulting").on("click", function () { // ←⁠​​​‌⁠ click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-consulting").get(0).close()
+
+    // ↑ action/if snippets ↑
+
+}) // ←⁠​​​‌⁠ click event
+
+
+
+// Modal: OpenSesame
+// when #view-details-opensesame clicked:
+//     open #modal-opensesame
+$("#view-details-opensesame").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-opensesame").get(0).showModal()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+// when #modal-close-opensesame clicked:
+//     close #modal-opensesame
+$("#modal-close-opensesame").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-opensesame").get(0).close()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+
+// Modal: Cornell Athletics
+// when #view-details-athletics clicked:
+//     open #modal-athletics
+$("#view-details-athletics").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-athletics").get(0).showModal()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+// when #modal-close-athletics clicked:
+//     close #modal-athletics
+$("#modal-close-athletics").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-athletics").get(0).close()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+
+// Modal: Project Access
+// when #view-details-project-access clicked:
+//     open #modal-project-access
+$("#view-details-project-access").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-project-access").get(0).showModal()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+// when #modal-close-project-access clicked:
+//     close #modal-project-access
+$("#modal-close-project-access").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-project-access").get(0).close()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+
+// Modal: Mosakowski Institute
+// when #view-details-mosakowski clicked:
+//     open #modal-mosakowski
+$("#view-details-mosakowski").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-mosakowski").get(0).showModal()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+// when #modal-close-mosakowski clicked:
+//     close #modal-mosakowski
+$("#modal-close-mosakowski").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-mosakowski").get(0).close()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+
+// Modal: Masterman's
+// when #view-details-mastermans clicked:
+//     open #modal-mastermans
+$("#view-details-mastermans").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-mastermans").get(0).showModal()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+// when #modal-close-mastermans clicked:
+//     close #modal-mastermans
+$("#modal-close-mastermans").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-mastermans").get(0).close()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+
+// Modal: Kohl's
+// when #view-details-kohls clicked:
+//     open #modal-kohls
+$("#view-details-kohls").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-kohls").get(0).showModal()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
+// when #modal-close-kohls clicked:
+//     close #modal-kohls
+$("#modal-close-kohls").on("click", function () { // ← click event
+
+    // ↓ action/if snippets ↓
+    $("#modal-kohls").get(0).close()
+    // ↑ action/if snippets ↑
+
+}) // ← click event
