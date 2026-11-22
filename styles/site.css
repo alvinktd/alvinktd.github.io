@@ -870,3 +870,10 @@ p {
         color: #ffffff;
     }
 }
+
+
+/* Two font sizes only: headings and text. Numbers are the one exception. */
+:root { --text-size: 1.0625rem; --heading-size: 1.75rem; }
+body *, body button { font-size: var(--text-size) !important; }
+body h1, body h2, body h3, body h4, body .site-title, body .modal-title { font-size: var(--heading-size) !important; }
+body .stat-number { font-size: 1.75rem !important; font-weight: normal !important; }
